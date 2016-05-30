@@ -134,14 +134,14 @@ public class SE {
 		 * 
 		 * @param id
 		 */
-		void done(Object id);
+		void done(Object id, long flag);
 
 		/**
 		 * mark the object occur error
 		 * 
 		 * @param id
 		 */
-		void bad(Object id);
+		void bad(Object id, long flag);
 
 	}
 
@@ -158,7 +158,7 @@ public class SE {
 				while (!X.isEmpty(id)) {
 					try {
 						if (X.isSame(id, prev)) {
-							s.bad(id);
+							s.bad(id, FLAG);
 							log.warn("load same id in one time, id=" + id);
 						} else {
 							Document d = s.load(id);
@@ -168,16 +168,16 @@ public class SE {
 
 								writer.deleteDocuments(new Term("_id", id.toString()));
 								writer.addDocument(d);
-								s.done(id);
+								s.done(id, FLAG);
 								updated = true;
 								prev = id;
 							} else {
-								s.bad(id);
+								s.bad(id, FLAG);
 							}
 						}
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
-						s.bad(id);
+						s.bad(id, FLAG);
 					}
 					id = s.next(FLAG);
 				}
