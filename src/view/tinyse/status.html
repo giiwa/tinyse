@@ -1,0 +1,39 @@
+<div class='head'>$lang.get('tinyse.status.title')</div>
+
+#parse('/widget/widget.message.html')
+
+<div class='tabs'>
+	<a href='/admin/tinyse/status' class='selected'>$lang.get('a.status')</a>
+</div>
+
+<table id='status-table' class='tablesorter nospace' border="0" cellpadding="0" cellspacing="1">
+	<thead>
+		<tr>
+			<th>Type</th>
+			<th>Count</th>
+			<th>Error</th>
+			<th>Index Average(ms)</th>
+			<th>Search Average(ms)</th>
+			<th>Search Max(ms)</th>
+			<th>Search Min(ms)</th>
+		</tr>
+	</thead>
+	<tbody>
+#foreach($f in $types)
+	<tr>
+		<td>$!f</td>
+		<td>$!m.count($f)</td>
+		<td>$!m.error($f)</td>
+		<td>$!m.index($f)</td>
+		<td>$!m.search($f)</td>
+		<td>$!m.searchmax($f)</td>
+		<td>$!m.searchmin($f)</td>
+	</tr>
+#end
+	</tbody>
+</table>
+
+<p style="margin-top:40px">
+	<a href="/tinyse/example.java" target="_blank">example</a>
+</p>
+

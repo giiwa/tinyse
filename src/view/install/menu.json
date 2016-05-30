@@ -1,14 +1,14 @@
 [{
 			'name' : 'admin',
 			'childs' : [{
-						name : 'menu.demo',
-						classes : 'icon-folder-download',
-						access : 'access.demo.admin',
-						seq : 40,
+						name : 'menu.tinyse',
+						classes : 'icon-cog',
+						access : 'access.config.admin',
+						seq : 1010,
 						childs : [{
-									name : 'menu.demo',
-									load : '/admin/demo',
-									access : 'access.demo.admin',
+									name : 'menu.tinyse',
+									load : '/admin/tinyse/status',
+									access : 'access.config.admin',
 									seq : 10,
 									classes : 'icon-folder-download'
 								}]

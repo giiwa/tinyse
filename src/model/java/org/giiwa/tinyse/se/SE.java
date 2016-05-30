@@ -2,6 +2,7 @@ package org.giiwa.tinyse.se;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -21,6 +22,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.giiwa.core.bean.TimeStamp;
 import org.giiwa.core.bean.X;
 import org.giiwa.core.task.Task;
 import org.wltea.analyzer.lucene.IKAnalyzer;
@@ -42,6 +44,89 @@ public class SE {
 	private static RAMDirectory ram;
 	private static IndexWriter writer;
 	private static IndexSearcher searcher;
+
+	private static Map<String, Counter> counter = new HashMap<String, Counter>();
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static Set<String> getTypes() {
+		return searchables.keySet();
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static int error(String type) {
+		Counter c = counter.get(type);
+		return c == null ? 0 : c.error;
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static float index(String type) {
+		Counter c = counter.get(type);
+		return c == null ? 0 : c.indexcost / c.indextimes;
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static float search(String type) {
+		Counter c = counter.get(type);
+		return c == null ? 0 : c.searchcost / c.searchtimes;
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static long searchmax(String type) {
+		Counter c = counter.get(type);
+		return c == null ? 0 : c.searchmax;
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static long searchmin(String type) {
+		Counter c = counter.get(type);
+		return c == null ? 0 : c.searchmin;
+	}
+
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static int count(String type) {
+		/**
+		 * avoid the searcher was changed by indexer
+		 */
+		IndexSearcher searcher = SE.searcher;
+
+		try {
+			BooleanQuery.Builder b = new BooleanQuery.Builder(); // for quest
+			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
+			TopDocs d = searcher.search(b.build(), 1);
+			return d.totalHits;
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
+		return -1;
+
+	}
 
 	public static void init(Configuration conf) {
 		try {
@@ -71,14 +156,18 @@ public class SE {
 		 */
 		IndexSearcher searcher = SE.searcher;
 
+		TimeStamp t = TimeStamp.create();
 		try {
 			BooleanQuery.Builder b = new BooleanQuery.Builder(); // for quest
 			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
 			b.add(q, Occur.MUST);
+
 			return searcher.search(b.build(), n);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+		} finally {
+			search(type, t.past(), 1);
 		}
 		return null;
 	}
@@ -145,6 +234,41 @@ public class SE {
 
 	}
 
+	private static void error(String type, int n) {
+		Counter c = counter.get(type);
+		if (c == null) {
+			c = new Counter();
+			counter.put(type, c);
+		}
+		c.error += n;
+	}
+
+	private static void index(String type, long cost, int n) {
+		Counter c = counter.get(type);
+		if (c == null) {
+			c = new Counter();
+			counter.put(type, c);
+		}
+		c.indexcost += cost;
+		c.indextimes += n;
+	}
+
+	private static void search(String type, long cost, int n) {
+		Counter c = counter.get(type);
+		if (c == null) {
+			c = new Counter();
+			counter.put(type, c);
+		}
+		c.searchcost += cost;
+		c.searchtimes += n;
+		if (cost > c.searchmax) {
+			c.searchmax = cost;
+		}
+		if (cost < c.searchmin) {
+			c.searchmin = cost;
+		}
+	}
+
 	final private static class IndexerTask extends Task {
 
 		@Override
@@ -159,8 +283,10 @@ public class SE {
 					try {
 						if (X.isSame(id, prev)) {
 							s.bad(id, FLAG);
+							error(type, 1);
 							log.warn("load same id in one time, id=" + id);
 						} else {
+							TimeStamp t = TimeStamp.create();
 							Document d = s.load(id);
 							if (d != null) {
 								d.add(new StringField("_type", type, Store.NO));
@@ -171,13 +297,16 @@ public class SE {
 								s.done(id, FLAG);
 								updated = true;
 								prev = id;
+								index(type, t.past(), 1);
 							} else {
 								s.bad(id, FLAG);
+								error(type, 1);
 							}
 						}
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
 						s.bad(id, FLAG);
+						error(type, 1);
 					}
 					id = s.next(FLAG);
 				}
@@ -198,6 +327,17 @@ public class SE {
 		public void onFinish() {
 			this.schedule(X.AMINUTE);
 		}
+
+	}
+
+	private static class Counter {
+		float indexcost;
+		int error;
+		int indextimes;
+		float searchcost;
+		int searchtimes;
+		long searchmax;
+		long searchmin = Long.MAX_VALUE;
 
 	}
 }
