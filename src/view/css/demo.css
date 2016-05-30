@@ -1,0 +1,32 @@
+html, body {
+	width: 100%;
+}
+
+#wrapper {
+	box-shadow: none;
+	position: relative;
+}
+
+#console {
+	width: 100%;
+	position: relative;
+}
+
+#console .center {
+	width: 1000px;
+	text-align: left;
+	word-break: break-all;
+}
+
+#console p {
+	margin-left: 10px;
+}
+
+#console p.message {
+	color: #44FF94;
+}
+
+#console p.error {
+	color: #FFBD44;
+}
+
