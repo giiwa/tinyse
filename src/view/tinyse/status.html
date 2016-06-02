@@ -41,11 +41,13 @@
 
 <script>
 function _reset() {
-	processing && processing.show();
-	$.post('/admin/tinyse/reset', {}, function(){
-		//do nothing
-		processing && processing.hide();
-		$.hint("$lang.get('tinyse.reset.hint')");
-	});
+	if(confirm("$lang.get('are_u_sure_reset_se')") {
+		processing && processing.show();
+		$.post('/admin/tinyse/reset', {}, function(){
+			//do nothing
+			processing && processing.hide();
+			$.hint("$lang.get('tinyse.reset.hint')");
+		});
+	}
 }
 </script>

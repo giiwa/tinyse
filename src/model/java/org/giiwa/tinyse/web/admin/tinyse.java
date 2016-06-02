@@ -49,15 +49,15 @@ public class tinyse extends Model {
 		return SE.index(type);
 	}
 
-	public float seach(String type) {
+	public float search(String type) {
 		return SE.search(type);
 	}
 
-	public long seachmax(String type) {
+	public long searchmax(String type) {
 		return SE.searchmax(type);
 	}
 
-	public long seachmin(String type) {
+	public long searchmin(String type) {
 		return SE.searchmin(type);
 	}
 
