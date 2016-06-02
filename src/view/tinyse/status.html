@@ -33,7 +33,16 @@
 	</tbody>
 </table>
 
+<button onclick='_reset()'>$lang.get('a.reset')</button>
+
 <p style="margin-top:40px">
 	<a href="/tinyse/example.java" target="_blank">example</a>
 </p>
 
+<script>
+function _reset() {
+	$.post('/admin/tinyse/reset', {}, function(){
+		//do nothing
+	});
+}
+</script>

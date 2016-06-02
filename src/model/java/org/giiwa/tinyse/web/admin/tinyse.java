@@ -1,8 +1,11 @@
 package org.giiwa.tinyse.web.admin;
 
+import org.giiwa.core.bean.X;
 import org.giiwa.framework.web.Model;
 import org.giiwa.framework.web.Path;
 import org.giiwa.tinyse.se.SE;
+
+import net.sf.json.JSONObject;
 
 public class tinyse extends Model {
 
@@ -11,6 +14,17 @@ public class tinyse extends Model {
 		this.set("types", SE.getTypes());
 		this.set("m", this);
 		this.show("/tinyse/status.html");
+	}
+
+	@Path(path = "reset", login = true, access = "access.config.admin")
+	public void reset() {
+		JSONObject jo = new JSONObject();
+
+		SE.reset();
+
+		jo.put(X.STATE, 200);
+		jo.put(X.MESSAGE, "ok");
+		this.response(jo);
 	}
 
 	/**
@@ -42,6 +56,7 @@ public class tinyse extends Model {
 	public long seachmax(String type) {
 		return SE.searchmax(type);
 	}
+
 	public long seachmin(String type) {
 		return SE.searchmin(type);
 	}

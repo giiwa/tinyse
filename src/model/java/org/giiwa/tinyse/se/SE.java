@@ -40,7 +40,7 @@ public class SE {
 
 	static Log log = LogFactory.getLog(SE.class);
 
-	static final long FLAG = System.currentTimeMillis();
+	static long FLAG = System.currentTimeMillis();
 
 	private static RAMDirectory ram;
 	private static IndexWriter writer;
@@ -233,6 +233,27 @@ public class SE {
 		 */
 		void bad(Object id, long flag);
 
+	}
+
+	/**
+	 * resort all
+	 */
+	public static void reset() {
+		try {
+			FLAG = System.currentTimeMillis();
+
+			counter.clear();
+
+			ram = new RAMDirectory();
+			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, new IKAnalyzer()));
+			writer.commit();
+
+			IndexReader reader = DirectoryReader.open(ram);
+			searcher = new IndexSearcher(reader);
+
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 	private static void error(String type, int n) {
