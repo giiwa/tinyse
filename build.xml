@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="webdemo" default="build" basedir=".">
+<project name="tinyse" default="build" basedir=".">
 
 	<!-- Project Properties -->
 	<property file="src/module.ini" />
@@ -29,7 +29,7 @@
 		<delete file="target/${name}_*.zip" />
 
 		<zip destfile="target/${name}_${version}_${BUILDNO}.zip" encoding="UTF-8">
-			<fileset dir="target/web${name}">
+			<fileset dir="target/${name}">
 				<exclude name="**/classes/**" />
 			</fileset>
 		</zip>
@@ -50,14 +50,14 @@
 		<delete dir="target" quiet="false" />
 		<mkdir dir="target/classes" />
 
-		<copy todir="target/web${name}">
+		<copy todir="target/${name}">
 			<fileset dir="src">
 				<exclude name="**/java/**" />
 			</fileset>
 		</copy>
 
 		<replaceregexp byline="true">
-			<fileset file="target/web${name}/module.ini" />
+			<fileset file="target/${name}/module.ini" />
 			<regexp pattern="^build=\d+" />
 			<substitution expression="build=${BUILDNO}" />
 		</replaceregexp>
@@ -67,7 +67,7 @@
 			<classpath refid="classpath" />
 		</javac>
 
-		<jar destfile="target/web${name}/WEB-INF/lib/web-${name}-${version}.jar"
+		<jar destfile="target/${name}/WEB-INF/lib/${name}-${version}.jar"
 			basedir="target/classes" excludes="**/*Test.class" />
 	</target>
 
