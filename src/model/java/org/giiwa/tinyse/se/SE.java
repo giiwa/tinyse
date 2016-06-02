@@ -39,7 +39,7 @@ public class SE {
 	public static final int MAX_RESULTS = 10000;
 
 	static Log log = LogFactory.getLog(SE.class);
-
+	static final String _TYPE = "_type";
 	static long FLAG = System.currentTimeMillis();
 
 	private static RAMDirectory ram;
@@ -119,7 +119,7 @@ public class SE {
 
 		try {
 			BooleanQuery b = new BooleanQuery(); // for quest
-			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
+			b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
 			TopDocs d = searcher.search(b, 1);
 			return d.totalHits;
 		} catch (Exception e) {
@@ -160,7 +160,7 @@ public class SE {
 		TimeStamp t = TimeStamp.create();
 		try {
 			BooleanQuery b = new BooleanQuery(); // for quest
-			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
+			b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
 			b.add(q, Occur.MUST);
 
 			return searcher.search(b, n);
@@ -311,14 +311,19 @@ public class SE {
 							TimeStamp t = TimeStamp.create();
 							Document d = s.load(id);
 							if (d != null) {
-								d.add(new StringField("_type", type, Store.NO));
-								d.add(new StringField("_id", id.toString(), Store.YES));
+								d.add(new StringField(_TYPE, type, Store.NO));
+								d.add(new StringField(X._ID, id.toString(), Store.YES));
 
-								writer.deleteDocuments(new Term("_id", id.toString()));
+								BooleanQuery q = new BooleanQuery();
+								q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+								q.add(new TermQuery(new Term(X._ID, id.toString())), Occur.MUST);
+								writer.deleteDocuments(q);
+
 								writer.addDocument(d);
 								s.done(id, FLAG);
 								updated = true;
 								prev = id;
+
 								index(type, t.past(), 1);
 							} else {
 								s.bad(id, FLAG);
