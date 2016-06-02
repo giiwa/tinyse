@@ -22,6 +22,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Version;
 import org.giiwa.core.bean.TimeStamp;
 import org.giiwa.core.bean.X;
 import org.giiwa.core.task.Task;
@@ -117,9 +118,9 @@ public class SE {
 		IndexSearcher searcher = SE.searcher;
 
 		try {
-			BooleanQuery.Builder b = new BooleanQuery.Builder(); // for quest
+			BooleanQuery b = new BooleanQuery(); // for quest
 			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
-			TopDocs d = searcher.search(b.build(), 1);
+			TopDocs d = searcher.search(b, 1);
 			return d.totalHits;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -131,7 +132,7 @@ public class SE {
 	public static void init(Configuration conf) {
 		try {
 			ram = new RAMDirectory();
-			writer = new IndexWriter(ram, new IndexWriterConfig(new IKAnalyzer()));
+			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, new IKAnalyzer()));
 			writer.commit();
 
 			IndexReader reader = DirectoryReader.open(ram);
@@ -158,11 +159,11 @@ public class SE {
 
 		TimeStamp t = TimeStamp.create();
 		try {
-			BooleanQuery.Builder b = new BooleanQuery.Builder(); // for quest
+			BooleanQuery b = new BooleanQuery(); // for quest
 			b.add(new TermQuery(new Term("_type", "rule")), Occur.MUST);
 			b.add(q, Occur.MUST);
 
-			return searcher.search(b.build(), n);
+			return searcher.search(b, n);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
