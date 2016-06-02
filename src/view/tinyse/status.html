@@ -41,8 +41,11 @@
 
 <script>
 function _reset() {
+	processing && processing.show();
 	$.post('/admin/tinyse/reset', {}, function(){
 		//do nothing
+		processing && processing.hide();
+		$.hint("$lang.get('tinyse.reset.hint')");
 	});
 }
 </script>

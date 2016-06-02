@@ -1,3 +1,4 @@
 menu.tinyse=Tinyse
 a.status=Status
 tinyse.status.title=Tinyse status
+tinyse.reset.hint=Reset SE
