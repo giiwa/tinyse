@@ -45,7 +45,7 @@ public class example {
 	}
 
 	@DBMapping(collection = "example")
-	public static class Example extends Bean implements SE.Searchable {
+	public static class Example extends Bean implements SE.Indexer {
 
 		/**
 		 * 

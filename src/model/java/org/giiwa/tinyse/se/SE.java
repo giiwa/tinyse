@@ -194,13 +194,13 @@ public class SE {
 	 * @param type
 	 * @param s
 	 */
-	public static void register(String type, Searchable s) {
+	public static void register(String type, Indexer s) {
 		searchables.put(type, s);
 	}
 
-	private static Map<String, Searchable> searchables = new HashMap<String, Searchable>();
+	private static Map<String, Indexer> searchables = new HashMap<String, Indexer>();
 
-	public static interface Searchable {
+	public static interface Indexer {
 
 		/**
 		 * get next object id
@@ -276,7 +276,7 @@ public class SE {
 			boolean updated = false;
 
 			for (String type : searchables.keySet()) {
-				Searchable s = searchables.get(type);
+				Indexer s = searchables.get(type);
 				Object prev = null;
 				Object id = s.next(FLAG);
 				while (!X.isEmpty(id)) {
