@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
@@ -15,6 +16,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -129,10 +132,14 @@ public class SE {
 
 	}
 
+	private static Analyzer analyzer;
+
 	public static void init(Configuration conf) {
 		try {
+
 			ram = new RAMDirectory();
-			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, new IKAnalyzer()));
+			analyzer = new IKAnalyzer();
+			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
 			writer.commit();
 
 			IndexReader reader = DirectoryReader.open(ram);
@@ -142,6 +149,25 @@ public class SE {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * create a query
+	 * 
+	 * @param s
+	 * @param fields
+	 * @return
+	 */
+	public static Query parse(String s, String[] fields) {
+		try {
+			MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
+			parser.setDefaultOperator(QueryParser.Operator.OR);
+			parser.setAllowLeadingWildcard(true);
+			return parser.parse(s);
+		} catch (Exception e) {
+			log.error(s, e);
+		}
+		return null;
 	}
 
 	/**
@@ -245,7 +271,7 @@ public class SE {
 			counter.clear();
 
 			ram = new RAMDirectory();
-			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, new IKAnalyzer()));
+			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
 			writer.commit();
 
 			IndexReader reader = DirectoryReader.open(ram);
