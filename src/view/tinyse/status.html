@@ -33,7 +33,7 @@
 	</tbody>
 </table>
 
-<button onclick='_reset()'>$lang.get('a.reset')</button>
+<button onclick='_reset();'>$lang.get('a.reset')</button>
 
 <p style="margin-top:40px">
 	<a href="/tinyse/example.java" target="_blank">example</a>
@@ -41,7 +41,7 @@
 
 <script>
 function _reset() {
-	if(confirm("$lang.get('are_u_sure_reset_se')") {
+	if(confirm("$lang.get('are_u_sure_reset_se')")) {
 		processing && processing.show();
 		$.post('/admin/tinyse/reset', {}, function(){
 			//do nothing
