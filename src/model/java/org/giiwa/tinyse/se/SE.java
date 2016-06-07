@@ -352,6 +352,7 @@ public class SE {
 
 								index(type, t.past(), 1);
 							} else {
+								log.warn("bad id ?" + id);
 								s.bad(id, FLAG);
 								error(type, 1);
 							}
