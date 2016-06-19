@@ -18,83 +18,87 @@ import com.mongodb.BasicDBObject;
 
 public class example {
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		init_data();
+    init_data();
 
-		SE.register("test", new Example());
+    SE.register("test", new Example());
 
-		////
-		Query q = new TermQuery(new Term("name", "ss"));
+    ////
+    Query q = new TermQuery(new Term("name", "ss"));
 
-		TopDocs docs = SE.search("test", q, 10);
-		ScoreDoc[] dd = docs.scoreDocs;
-		for (ScoreDoc d : dd) {
-			Long id = (Long) SE.get(d.doc);
-			if (id != null) {
-				Example e = Example.load((long) id);
-				System.out.println(e.getName());
-			}
-		}
-	}
+    TopDocs docs = SE.search("test", q, 10);
+    ScoreDoc[] dd = docs.scoreDocs;
+    for (ScoreDoc d : dd) {
+      Long id = (Long) SE.get(d.doc);
+      if (id != null) {
+        Example e = Example.load((long) id);
+        System.out.println(e.getName());
+      }
+    }
+  }
 
-	private static void init_data() {
-		for (int i = 0; i < 1000; i++) {
-			Example.create(V.create("name", "ss"));
-		}
-	}
+  private static void init_data() {
+    for (int i = 0; i < 1000; i++) {
+      Example.create(V.create("name", "ss"));
+    }
+  }
 
-	@DBMapping(collection = "example")
-	public static class Example extends Bean implements SE.Indexer {
+  @DBMapping(collection = "example")
+  public static class Example extends Bean implements SE.Indexer {
 
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-		public String getName() {
-			return this.getString("name");
-		}
+    public String getName() {
+      return this.getString("name");
+    }
 
-		public static void create(V v) {
-			long id = UID.next("example.id");
-			while (Bean.exists(new BasicDBObject(X._ID, id), Example.class)) {
-				id = UID.next("example.id");
-			}
-		}
+    public static void create(V v) {
+      long id = UID.next("example.id");
+      try {
+        while (Bean.exists(new BasicDBObject(X._ID, id), Example.class)) {
+          id = UID.next("example.id");
+        }
+      } catch (Exception e1) {
+        log.error(e1.getMessage(), e1);
+      }
+    }
 
-		public static Example load(long id) {
-			return Bean.load(id, Example.class);
-		}
+    public static Example load(long id) {
+      return Bean.load(id, Example.class);
+    }
 
-		@Override
-		public Object next(long flag) {
-			Example e = Bean.load(new BasicDBObject("flag", new BasicDBObject("$ne", flag)), Example.class);
-			if (e != null) {
-				return e.get(X._ID);
-			}
-			return null;
-		}
+    @Override
+    public Object next(long flag) {
+      Example e = Bean.load(new BasicDBObject("flag", new BasicDBObject("$ne", flag)), Example.class);
+      if (e != null) {
+        return e.get(X._ID);
+      }
+      return null;
+    }
 
-		@Override
-		public Document load(Object id) {
-			Example e = Bean.load(id, Example.class);
-			if (e != null) {
-				Document d = new Document();
-				d.add(new StringField("name", e.getString("name"), Store.NO));
-				return d;
-			}
-			return null;
-		}
+    @Override
+    public Document load(Object id) {
+      Example e = Bean.load(id, Example.class);
+      if (e != null) {
+        Document d = new Document();
+        d.add(new StringField("name", e.getString("name"), Store.NO));
+        return d;
+      }
+      return null;
+    }
 
-		@Override
-		public void done(Object id, long flag) {
-			Bean.updateCollection(id, V.create("flag", flag).set("indexerror", ""), Example.class);
-		}
+    @Override
+    public void done(Object id, long flag) {
+      Bean.updateCollection(id, V.create("flag", flag).set("indexerror", ""), Example.class);
+    }
 
-		@Override
-		public void bad(Object id, long flag) {
-			Bean.updateCollection(id, V.create("flag", flag).set("indexerror", "error"), Example.class);
-		}
-	}
+    @Override
+    public void bad(Object id, long flag) {
+      Bean.updateCollection(id, V.create("flag", flag).set("indexerror", "error"), Example.class);
+    }
+  }
 }

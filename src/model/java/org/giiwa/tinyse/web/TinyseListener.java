@@ -3,11 +3,11 @@ package org.giiwa.tinyse.web;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.giiwa.framework.web.LifeListener;
+import org.giiwa.framework.web.IListener;
 import org.giiwa.framework.web.Module;
 import org.giiwa.tinyse.se.SE;
 
-public class TinyseListener implements LifeListener {
+public class TinyseListener implements IListener {
 
 	static Log log = LogFactory.getLog(TinyseListener.class);
 

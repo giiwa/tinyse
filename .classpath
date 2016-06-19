@@ -27,7 +27,6 @@
 	<classpathentry kind="lib" path="depends/ezmorph-1.0.6.jar"/>
 	<classpathentry kind="lib" path="depends/geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
 	<classpathentry kind="lib" path="depends/geronimo-jms_1.1_spec-1.1.1.jar"/>
-	<classpathentry kind="lib" path="depends/giiwa-1.0.jar"/>
 	<classpathentry kind="lib" path="depends/hawtbuf-1.10.jar"/>
 	<classpathentry kind="lib" path="depends/hawtdispatch-1.20.jar"/>
 	<classpathentry kind="lib" path="depends/hawtdispatch-transport-1.20.jar"/>
@@ -61,16 +60,14 @@
 	<classpathentry kind="lib" path="depends/web-portal-1.0.jar"/>
 	<classpathentry kind="lib" path="depends/xmpcore-2.6.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/IKAnalyzer-2012FF.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-analyzers-common-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-codecs-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-core-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-highlighter-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-join-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-memory-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queries-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queryparser-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-sandbox-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-spatial-6.0.0.jar"/>
-	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-spatial3d-6.0.0.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-analyzers-3.6.2.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-analyzers-common-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-core-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-highlighter-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-memory-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queries-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queryparser-4.10.4.jar"/>
+	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-sandbox-4.10.4.jar"/>
+	<classpathentry kind="lib" path="depends/giiwa-1.0.2.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
