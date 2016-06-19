@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+	<id>108</id>
+	<name>tinyse</name>
+	<package>org.giiwa.tinyse.web</package>
+	<screenshot>/images/tinyse_screenshot.png</screenshot>
+	<version>1.0.1</version>
+	<build>0</build>
+	<enabled>true</enabled>
+	<readme>giiwa portal</readme>
+	<listener>
+		<class>org.giiwa.tinyse.web.TinyseListener</class>
+	</listener>
+</module>
