@@ -7,8 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="depends/activation-1.1.jar"/>
-	<classpathentry kind="lib" path="depends/activemq-client-5.10.0.jar"/>
-	<classpathentry kind="lib" path="depends/ant-contrib-1.0b3.jar"/>
 	<classpathentry kind="lib" path="depends/commons-beanutils-1.8.0.jar"/>
 	<classpathentry kind="lib" path="depends/commons-beanutils-core-1.8.0.jar"/>
 	<classpathentry kind="lib" path="depends/commons-codec-1.8.jar"/>
@@ -48,16 +46,10 @@
 	<classpathentry kind="lib" path="depends/mongo-java-driver-2.10.0.jar"/>
 	<classpathentry kind="lib" path="depends/mqtt-client-1.10.jar"/>
 	<classpathentry kind="lib" path="depends/postgresql-9.0-801.jdbc4.jar"/>
-	<classpathentry kind="lib" path="depends/qpid-amqp-1-0-client-0.26.jar"/>
-	<classpathentry kind="lib" path="depends/qpid-amqp-1-0-client-jms-0.26.jar"/>
-	<classpathentry kind="lib" path="depends/qpid-amqp-1-0-common-0.26.jar"/>
 	<classpathentry kind="lib" path="depends/servlet-api-2.5.jar"/>
 	<classpathentry kind="lib" path="depends/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="depends/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="lib" path="depends/velocity-1.7.jar"/>
-	<classpathentry kind="lib" path="depends/web-langsorter-1.0.jar"/>
-	<classpathentry kind="lib" path="depends/web-looserule-1.0.jar"/>
-	<classpathentry kind="lib" path="depends/web-portal-1.0.jar"/>
 	<classpathentry kind="lib" path="depends/xmpcore-2.6.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/IKAnalyzer-2012FF.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-analyzers-3.6.2.jar"/>
