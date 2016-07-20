@@ -27,7 +27,7 @@ public class example {
     ////
     Query q = new TermQuery(new Term("name", "ss"));
 
-    TopDocs docs = SE.search("test", q, 10);
+    TopDocs docs = SE.search("test", q);
     ScoreDoc[] dd = docs.scoreDocs;
     for (ScoreDoc d : dd) {
       Long id = (Long) SE.get(d.doc);

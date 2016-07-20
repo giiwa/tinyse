@@ -39,359 +39,386 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
  */
 public class SE {
 
-	public static final int MAX_RESULTS = 10000;
+  /**
+   * MAX results
+   */
+  public static final int             MAX_RESULTS = 10000;
 
-	static Log log = LogFactory.getLog(SE.class);
-	static final String _TYPE = "_type";
-	static long FLAG = System.currentTimeMillis();
+  static Log                          log         = LogFactory.getLog(SE.class);
+  static final String                 _TYPE       = "_type";
+  static long                         FLAG        = System.currentTimeMillis();
 
-	private static RAMDirectory ram;
-	private static IndexWriter writer;
-	private static IndexSearcher searcher;
+  private static RAMDirectory         ram;
+  private static IndexWriter          writer;
+  private static IndexSearcher        searcher;
 
-	private static Map<String, Counter> counter = new HashMap<String, Counter>();
+  private static Map<String, Counter> counter     = new HashMap<String, Counter>();
 
-	/**
-	 * 
-	 * @return
-	 */
-	public static Set<String> getTypes() {
-		return searchables.keySet();
-	}
+  /**
+   * get the supports types
+   * 
+   * @return Set of types
+   */
+  public static Set<String> getTypes() {
+    return searchables.keySet();
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static int error(String type) {
-		Counter c = counter.get(type);
-		return c == null ? 0 : c.error;
-	}
+  /**
+   * inc error count
+   * 
+   * @param type
+   * @return int of current error count
+   */
+  public static int error(String type) {
+    Counter c = counter.get(type);
+    return c == null ? 0 : c.error;
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static float index(String type) {
-		Counter c = counter.get(type);
-		return c == null ? 0 : c.indexcost / c.indextimes;
-	}
+  /**
+   * get the index usage=timecost/count for a type
+   * 
+   * @param type
+   * @return float of the usage
+   */
+  public static float index(String type) {
+    Counter c = counter.get(type);
+    return c == null ? 0 : c.indexcost / c.indextimes;
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static float search(String type) {
-		Counter c = counter.get(type);
-		return c == null ? 0 : c.searchcost / c.searchtimes;
-	}
+  /**
+   * get the search usage=timecost/count
+   * 
+   * @param type
+   * @return float of the usage
+   */
+  public static float search(String type) {
+    Counter c = counter.get(type);
+    return c == null ? 0 : c.searchcost / c.searchtimes;
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static long searchmax(String type) {
-		Counter c = counter.get(type);
-		return c == null ? 0 : c.searchmax;
-	}
+  /**
+   * get the max cost of search for a type
+   * 
+   * @param type
+   * @return the time cost
+   */
+  public static long searchmax(String type) {
+    Counter c = counter.get(type);
+    return c == null ? 0 : c.searchmax;
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static long searchmin(String type) {
-		Counter c = counter.get(type);
-		return c == null ? 0 : c.searchmin;
-	}
+  /**
+   * get the min cost o search for a type
+   * 
+   * @param type
+   * @return the time cost
+   */
+  public static long searchmin(String type) {
+    Counter c = counter.get(type);
+    return c == null ? 0 : c.searchmin;
+  }
 
-	/**
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static int count(String type) {
-		/**
-		 * avoid the searcher was changed by indexer
-		 */
-		IndexSearcher searcher = SE.searcher;
+  /**
+   * count the documents that indexed
+   * 
+   * @param type
+   * @return the number of the documents
+   */
+  public static int count(String type) {
+    /**
+     * avoid the searcher was changed by indexer
+     */
+    IndexSearcher searcher = SE.searcher;
 
-		try {
-			BooleanQuery b = new BooleanQuery(); // for quest
-			b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-			TopDocs d = searcher.search(b, 1);
-			return d.totalHits;
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return -1;
+    try {
+      BooleanQuery b = new BooleanQuery(); // for quest
+      b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+      TopDocs d = searcher.search(b, 1);
+      return d.totalHits;
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+    return -1;
 
-	}
+  }
 
-	private static Analyzer analyzer;
+  private static Analyzer analyzer;
 
-	public static void init(Configuration conf) {
-		try {
+  /**
+   * initialize the SE
+   * 
+   * @param conf
+   *          the configuration
+   */
+  public static void init(Configuration conf) {
+    try {
 
-			ram = new RAMDirectory();
-			analyzer = new IKAnalyzer();
-			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
-			writer.commit();
+      ram = new RAMDirectory();
+      analyzer = new IKAnalyzer();
+      writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
+      writer.commit();
 
-			IndexReader reader = DirectoryReader.open(ram);
-			searcher = new IndexSearcher(reader);
+      IndexReader reader = DirectoryReader.open(ram);
+      searcher = new IndexSearcher(reader);
 
-			new IndexerTask().schedule(10);
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
+      new IndexerTask().schedule(10);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+  }
 
-	/**
-	 * create a query
-	 * 
-	 * @param s
-	 * @param fields
-	 * @return
-	 */
-	public static Query parse(String s, String[] fields) {
-		try {
-			MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
-			parser.setDefaultOperator(QueryParser.Operator.OR);
-			parser.setAllowLeadingWildcard(true);
-			return parser.parse(s);
-		} catch (Exception e) {
-			log.error(s, e);
-		}
-		return null;
-	}
+  /**
+   * create a query
+   * 
+   * @param s
+   *          the word
+   * @param fields
+   *          the search fields
+   * @return the Query
+   */
+  public static Query parse(String s, String[] fields) {
+    try {
+      MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
+      parser.setDefaultOperator(QueryParser.Operator.OR);
+      parser.setAllowLeadingWildcard(true);
+      return parser.parse(s);
+    } catch (Exception e) {
+      log.error(s, e);
+    }
+    return null;
+  }
 
-	/**
-	 * @param type
-	 * @param q
-	 * @param n
-	 * @return TopDocs
-	 */
-	public static TopDocs search(String type, Query q, int n) {
+  /**
+   * searching
+   * 
+   * @param type
+   *          the type
+   * @param q
+   *          the query that created by the parse API
+   * @return TopDocs of the search result
+   */
+  public static TopDocs search(String type, Query q) {
 
-		/**
-		 * avoid the searcher was changed by indexer
-		 */
-		IndexSearcher searcher = SE.searcher;
+    /**
+     * avoid the searcher was changed by indexer
+     */
+    IndexSearcher searcher = SE.searcher;
 
-		TimeStamp t = TimeStamp.create();
-		try {
-			BooleanQuery b = new BooleanQuery(); // for quest
-			b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-			b.add(q, Occur.MUST);
+    TimeStamp t = TimeStamp.create();
+    try {
+      BooleanQuery b = new BooleanQuery(); // for quest
+      b.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+      b.add(q, Occur.MUST);
 
-			return searcher.search(b, n);
+      return searcher.search(b, MAX_RESULTS);
 
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		} finally {
-			search(type, t.past(), 1);
-		}
-		return null;
-	}
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    } finally {
+      search(type, t.past(), 1);
+    }
+    return null;
+  }
 
-	/**
-	 * get the object id by the docid
-	 * 
-	 * @param docID
-	 * @return Object of id
-	 */
-	public static Object get(int docID) {
-		try {
-			Document d = searcher.doc(docID);
-			return d.get("_id");
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return null;
-	}
+  /**
+   * get the object id by the docid
+   * 
+   * @param docID
+   * @return Object of id
+   */
+  public static Object get(int docID) {
+    try {
+      Document d = searcher.doc(docID);
+      return d.get("_id");
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+    return null;
+  }
 
-	/**
-	 * register a searchable
-	 * 
-	 * @param type
-	 * @param s
-	 */
-	public static void register(String type, Indexer s) {
-		searchables.put(type, s);
-	}
+  /**
+   * register a searchable
+   * 
+   * @param type
+   * @param s
+   */
+  public static void register(String type, Indexer s) {
+    searchables.put(type, s);
+  }
 
-	private static Map<String, Indexer> searchables = new HashMap<String, Indexer>();
+  private static Map<String, Indexer> searchables = new HashMap<String, Indexer>();
 
-	public static interface Indexer {
+  /**
+   * the index interface, used to created index for candidates searchable object
+   * 
+   * @author wujun
+   *
+   */
+  public static interface Indexer {
 
-		/**
-		 * get next object id
-		 * 
-		 * @param flag
-		 * @return Object of id
-		 */
-		Object next(long flag);
+    /**
+     * get next object id
+     * 
+     * @param flag
+     * @return Object of id
+     */
+    Object next(long flag);
 
-		/**
-		 * load the Document by object id
-		 * 
-		 * @param id
-		 * @return
-		 */
-		Document load(Object id);
+    /**
+     * load the Document by object id
+     * 
+     * @param id
+     * @return
+     */
+    Document load(Object id);
 
-		/**
-		 * mark the object has been done
-		 * 
-		 * @param id
-		 */
-		void done(Object id, long flag);
+    /**
+     * mark the object has been done
+     * 
+     * @param id
+     */
+    void done(Object id, long flag);
 
-		/**
-		 * mark the object occur error
-		 * 
-		 * @param id
-		 */
-		void bad(Object id, long flag);
+    /**
+     * mark the object occur error
+     * 
+     * @param id
+     */
+    void bad(Object id, long flag);
 
-	}
+  }
 
-	/**
-	 * resort all
-	 */
-	public static void reset() {
-		try {
-			FLAG = System.currentTimeMillis();
+  /**
+   * resort all
+   */
+  public static void reset() {
+    try {
+      FLAG = System.currentTimeMillis();
 
-			counter.clear();
+      counter.clear();
 
-			ram = new RAMDirectory();
-			writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
-			writer.commit();
+      ram = new RAMDirectory();
+      writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
+      writer.commit();
 
-			IndexReader reader = DirectoryReader.open(ram);
-			searcher = new IndexSearcher(reader);
+      IndexReader reader = DirectoryReader.open(ram);
+      searcher = new IndexSearcher(reader);
 
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+  }
 
-	private static void error(String type, int n) {
-		Counter c = counter.get(type);
-		if (c == null) {
-			c = new Counter();
-			counter.put(type, c);
-		}
-		c.error += n;
-	}
+  private static void error(String type, int n) {
+    Counter c = counter.get(type);
+    if (c == null) {
+      c = new Counter();
+      counter.put(type, c);
+    }
+    c.error += n;
+  }
 
-	private static void index(String type, long cost, int n) {
-		Counter c = counter.get(type);
-		if (c == null) {
-			c = new Counter();
-			counter.put(type, c);
-		}
-		c.indexcost += cost;
-		c.indextimes += n;
-	}
+  private static void index(String type, long cost, int n) {
+    Counter c = counter.get(type);
+    if (c == null) {
+      c = new Counter();
+      counter.put(type, c);
+    }
+    c.indexcost += cost;
+    c.indextimes += n;
+  }
 
-	private static void search(String type, long cost, int n) {
-		Counter c = counter.get(type);
-		if (c == null) {
-			c = new Counter();
-			counter.put(type, c);
-		}
-		c.searchcost += cost;
-		c.searchtimes += n;
-		if (cost > c.searchmax) {
-			c.searchmax = cost;
-		}
-		if (cost < c.searchmin) {
-			c.searchmin = cost;
-		}
-	}
+  private static void search(String type, long cost, int n) {
+    Counter c = counter.get(type);
+    if (c == null) {
+      c = new Counter();
+      counter.put(type, c);
+    }
+    c.searchcost += cost;
+    c.searchtimes += n;
+    if (cost > c.searchmax) {
+      c.searchmax = cost;
+    }
+    if (cost < c.searchmin) {
+      c.searchmin = cost;
+    }
+  }
 
-	final private static class IndexerTask extends Task {
+  final private static class IndexerTask extends Task {
 
-		@Override
-		public void onExecute() {
-			boolean updated = false;
+    @Override
+    public void onExecute() {
+      boolean updated = false;
 
-			for (String type : searchables.keySet()) {
-				Indexer s = searchables.get(type);
-				Object prev = null;
-				Object id = s.next(FLAG);
-				while (!X.isEmpty(id)) {
-					try {
-						if (X.isSame(id, prev)) {
-							s.bad(id, FLAG);
-							error(type, 1);
-							log.warn("load same id in one time, id=" + id);
-						} else {
-							TimeStamp t = TimeStamp.create();
-							Document d = s.load(id);
-							if (d != null) {
-								d.add(new StringField(_TYPE, type, Store.NO));
-								d.add(new StringField(X._ID, id.toString(), Store.YES));
+      for (String type : searchables.keySet()) {
+        Indexer s = searchables.get(type);
+        Object prev = null;
+        Object id = s.next(FLAG);
+        while (!X.isEmpty(id)) {
+          try {
+            if (X.isSame(id, prev)) {
+              s.bad(id, FLAG);
+              error(type, 1);
+              log.warn("load same id in one time, id=" + id);
+            } else {
+              TimeStamp t = TimeStamp.create();
+              Document d = s.load(id);
+              if (d != null) {
+                d.add(new StringField(_TYPE, type, Store.NO));
+                d.add(new StringField(X._ID, id.toString(), Store.YES));
 
-								BooleanQuery q = new BooleanQuery();
-								q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-								q.add(new TermQuery(new Term(X._ID, id.toString())), Occur.MUST);
-								writer.deleteDocuments(q);
+                BooleanQuery q = new BooleanQuery();
+                q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+                q.add(new TermQuery(new Term(X._ID, id.toString())), Occur.MUST);
+                writer.deleteDocuments(q);
 
-								writer.addDocument(d);
-								s.done(id, FLAG);
-								updated = true;
-								prev = id;
+                writer.addDocument(d);
+                s.done(id, FLAG);
+                updated = true;
+                prev = id;
 
-								index(type, t.past(), 1);
-							} else {
-								log.warn("bad id ?" + id);
-								s.bad(id, FLAG);
-								error(type, 1);
-							}
-						}
-					} catch (Exception e) {
-						log.error(e.getMessage(), e);
-						s.bad(id, FLAG);
-						error(type, 1);
-					}
-					id = s.next(FLAG);
-				}
-			}
+                index(type, t.past(), 1);
+              } else {
+                log.warn("bad id ?" + id);
+                s.bad(id, FLAG);
+                error(type, 1);
+              }
+            }
+          } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            s.bad(id, FLAG);
+            error(type, 1);
+          }
+          id = s.next(FLAG);
+        }
+      }
 
-			if (updated) {
-				try {
-					writer.commit();
-					IndexReader reader = DirectoryReader.open(ram);
-					searcher = new IndexSearcher(reader);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
-			}
-		}
+      if (updated) {
+        try {
+          writer.commit();
+          IndexReader reader = DirectoryReader.open(ram);
+          searcher = new IndexSearcher(reader);
+        } catch (Exception e) {
+          log.error(e.getMessage(), e);
+        }
+      }
+    }
 
-		@Override
-		public void onFinish() {
-			this.schedule(X.AMINUTE);
-		}
+    @Override
+    public void onFinish() {
+      this.schedule(X.AMINUTE);
+    }
 
-	}
+  }
 
-	private static class Counter {
-		float indexcost;
-		int error;
-		int indextimes;
-		float searchcost;
-		int searchtimes;
-		long searchmax;
-		long searchmin = Long.MAX_VALUE;
+  private static class Counter {
+    float indexcost;
+    int   error;
+    int   indextimes;
+    float searchcost;
+    int   searchtimes;
+    long  searchmax;
+    long  searchmin = Long.MAX_VALUE;
 
-	}
+  }
 }
