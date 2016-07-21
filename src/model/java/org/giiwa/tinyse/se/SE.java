@@ -1,5 +1,6 @@
 package org.giiwa.tinyse.se;
 
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
@@ -24,6 +26,11 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleFragmenter;
+import org.apache.lucene.search.highlight.TextFragment;
+import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.giiwa.core.bean.TimeStamp;
@@ -221,6 +228,39 @@ public class SE {
   }
 
   /**
+   * highlight the fields with the formatter and the query, and return the
+   * result
+   * 
+   * @param docId
+   *          the docid
+   * @param field
+   *          the field
+   * @param query
+   *          the query
+   * @param formatter
+   *          the formatter, if null then using default formatter
+   * @return the string of result
+   */
+  public static String highlight(int docId, String field, Query query,
+      org.apache.lucene.search.highlight.Formatter formatter) {
+    if (formatter == null) {
+      formatter = new BoldFormatter();
+    }
+
+    Highlighter highlighter = new Highlighter(formatter, new QueryScorer(query));
+    highlighter.setTextFragmenter(new SimpleFragmenter(100));
+
+    try {
+      Document doc = searcher.doc(docId);
+      String text = doc.get(field);
+      return highlighter.getBestFragment(analyzer, field, text);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+    return null;
+  }
+
+  /**
    * get the object id by the docid
    * 
    * @param docID
@@ -247,7 +287,7 @@ public class SE {
    *          the id of document
    */
   public static void delete(String type, String id) {
-    // TODO
+
     BooleanQuery q1 = new BooleanQuery();
     try {
       q1.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
@@ -263,7 +303,9 @@ public class SE {
    * register a searchable
    * 
    * @param type
+   *          the data type
    * @param s
+   *          the indexer for the searchable object
    */
   public static void register(String type, Indexer s) {
     searchables.put(type, s);
