@@ -232,8 +232,31 @@ public class SE {
       return d.get("_id");
     } catch (Exception e) {
       log.error(e.getMessage(), e);
+      // delete(docID);
     }
+
     return null;
+  }
+
+  /**
+   * delete the document from the index database
+   * 
+   * @param type
+   *          the document type
+   * @param id
+   *          the id of document
+   */
+  public static void delete(String type, String id) {
+    // TODO
+    BooleanQuery q1 = new BooleanQuery();
+    try {
+      q1.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+      q1.add(new TermQuery(new Term(X._ID, id)), Occur.MUST);
+
+      writer.deleteDocuments(q1);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
   }
 
   /**
