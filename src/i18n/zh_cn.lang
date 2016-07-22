@@ -1,3 +1,5 @@
 menu.tinyse=搜索引擎
 a.status=状态
 tinyse.status.title=搜索引擎状态
+are_u_sure_reset_se=所有索引将被删除， 确定重置？
+tinyse.reset.hint=重置成功
