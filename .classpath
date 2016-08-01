@@ -60,6 +60,6 @@
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queries-4.10.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queryparser-4.10.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-sandbox-4.10.4.jar"/>
-	<classpathentry kind="lib" path="depends/giiwa-1.0.2.jar"/>
+	<classpathentry kind="lib" path="depends/giiwa-1.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
