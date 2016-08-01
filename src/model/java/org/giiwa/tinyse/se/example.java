@@ -9,12 +9,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.giiwa.core.bean.Bean;
-import org.giiwa.core.bean.DBMapping;
+import org.giiwa.core.bean.Helper;
+import org.giiwa.core.bean.Helper.V;
+import org.giiwa.core.bean.Helper.W;
+import org.giiwa.core.bean.Table;
 import org.giiwa.core.bean.UID;
 import org.giiwa.core.bean.X;
-import org.giiwa.core.bean.Bean.V;
-
-import com.mongodb.BasicDBObject;
 
 public class example {
 
@@ -44,7 +44,7 @@ public class example {
     }
   }
 
-  @DBMapping(collection = "example")
+  @Table(name = "example")
   public static class Example extends Bean implements SE.Indexer {
 
     /**
@@ -59,7 +59,7 @@ public class example {
     public static void create(V v) {
       long id = UID.next("example.id");
       try {
-        while (Bean.exists(new BasicDBObject(X._ID, id), Example.class)) {
+        while (Helper.exists(id, Example.class)) {
           id = UID.next("example.id");
         }
       } catch (Exception e1) {
@@ -68,12 +68,12 @@ public class example {
     }
 
     public static Example load(long id) {
-      return Bean.load(id, Example.class);
+      return Helper.load(id, Example.class);
     }
 
     @Override
     public Object next(long flag) {
-      Example e = Bean.load(new BasicDBObject("flag", new BasicDBObject("$ne", flag)), Example.class);
+      Example e = Helper.load(W.create().and("flag", flag, W.OP_NEQ), Example.class);
       if (e != null) {
         return e.get(X._ID);
       }
@@ -82,7 +82,7 @@ public class example {
 
     @Override
     public Document load(Object id) {
-      Example e = Bean.load(id, Example.class);
+      Example e = Helper.load(id, Example.class);
       if (e != null) {
         Document d = new Document();
         d.add(new StringField("name", e.getString("name"), Store.NO));
@@ -93,12 +93,12 @@ public class example {
 
     @Override
     public void done(Object id, long flag) {
-      Bean.updateCollection(id, V.create("flag", flag).set("indexerror", ""), Example.class);
+      Helper.update(id, V.create("flag", flag).set("indexerror", ""), Example.class);
     }
 
     @Override
     public void bad(Object id, long flag) {
-      Bean.updateCollection(id, V.create("flag", flag).set("indexerror", "error"), Example.class);
+      Helper.update(id, V.create("flag", flag).set("indexerror", "error"), Example.class);
     }
   }
 }
