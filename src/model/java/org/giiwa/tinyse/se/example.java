@@ -75,7 +75,7 @@ public class example {
     public Object next(long flag) {
       Example e = Helper.load(W.create().and("flag", flag, W.OP_NEQ), Example.class);
       if (e != null) {
-        return e.get(X._ID);
+        return e.get(X.ID);
       }
       return null;
     }

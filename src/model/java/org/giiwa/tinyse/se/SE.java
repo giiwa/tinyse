@@ -1,6 +1,5 @@
 package org.giiwa.tinyse.se;
 
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -9,7 +8,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
@@ -29,8 +27,6 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
-import org.apache.lucene.search.highlight.TextFragment;
-import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.giiwa.core.bean.TimeStamp;
@@ -291,7 +287,7 @@ public class SE {
     BooleanQuery q1 = new BooleanQuery();
     try {
       q1.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-      q1.add(new TermQuery(new Term(X._ID, id)), Occur.MUST);
+      q1.add(new TermQuery(new Term(X.ID, id)), Occur.MUST);
 
       writer.deleteDocuments(q1);
     } catch (Exception e) {
@@ -430,11 +426,11 @@ public class SE {
               Document d = s.load(id);
               if (d != null) {
                 d.add(new StringField(_TYPE, type, Store.NO));
-                d.add(new StringField(X._ID, id.toString(), Store.YES));
+                d.add(new StringField(X.ID, id.toString(), Store.YES));
 
                 BooleanQuery q = new BooleanQuery();
                 q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-                q.add(new TermQuery(new Term(X._ID, id.toString())), Occur.MUST);
+                q.add(new TermQuery(new Term(X.ID, id.toString())), Occur.MUST);
                 writer.deleteDocuments(q);
 
                 writer.addDocument(d);
