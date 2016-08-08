@@ -265,7 +265,7 @@ public class SE {
   public static Object get(int docID) {
     try {
       Document d = searcher.doc(docID);
-      return d.get("_id");
+      return d.get(X.ID);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       // delete(docID);
