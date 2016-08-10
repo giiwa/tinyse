@@ -5,7 +5,7 @@
 	<package>org.giiwa.tinyse.web</package>
 	<screenshot>/images/tinyse_screenshot.png</screenshot>
 	<version>1.0.1</version>
-	<build>1608081457</build>
+	<build>1608101119</build>
 	<enabled>true</enabled>
 	<readme>giiwa portal</readme>
 	<listener>
