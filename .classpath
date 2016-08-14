@@ -36,7 +36,6 @@
 	<classpathentry kind="lib" path="depends/jedis-2.8.0.jar"/>
 	<classpathentry kind="lib" path="depends/js-1.7.6.jar"/>
 	<classpathentry kind="lib" path="depends/jsch-0.1.53.jar"/>
-	<classpathentry kind="lib" path="depends/json-lib-2.4-jdk15.jar"/>
 	<classpathentry kind="lib" path="depends/jsoup-1.5.2.jar"/>
 	<classpathentry kind="lib" path="depends/jtidy-r938.jar"/>
 	<classpathentry kind="lib" path="depends/log4j-1.2.16.jar"/>

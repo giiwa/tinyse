@@ -1,11 +1,10 @@
 package org.giiwa.tinyse.web.admin;
 
 import org.giiwa.core.bean.X;
+import org.giiwa.core.json.JSON;
 import org.giiwa.framework.web.Model;
 import org.giiwa.framework.web.Path;
 import org.giiwa.tinyse.se.SE;
-
-import net.sf.json.JSONObject;
 
 public class tinyse extends Model {
 
@@ -18,7 +17,7 @@ public class tinyse extends Model {
 
 	@Path(path = "reset", login = true, access = "access.config.admin")
 	public void reset() {
-		JSONObject jo = new JSONObject();
+		JSON jo = new JSON();
 
 		SE.reset();
 
