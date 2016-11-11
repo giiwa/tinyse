@@ -147,7 +147,9 @@ public class SE {
 
   }
 
-  private static Analyzer analyzer;
+  private static IndexerTask indexer;
+
+  private static Analyzer    analyzer;
 
   /**
    * initialize the SE
@@ -166,7 +168,8 @@ public class SE {
       IndexReader reader = DirectoryReader.open(ram);
       searcher = new IndexSearcher(reader);
 
-      new IndexerTask().schedule(10);
+      indexer = new IndexerTask();
+      indexer.schedule(10);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
@@ -182,9 +185,21 @@ public class SE {
    * @return the Query
    */
   public static Query parse(String s, String[] fields) {
+    return parse(s, fields, QueryParser.Operator.OR);
+  }
+
+  /**
+   * create a query
+   * 
+   * @param s
+   * @param fields
+   * @param op
+   * @return
+   */
+  public static Query parse(String s, String[] fields, QueryParser.Operator op) {
     try {
       MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
-      parser.setDefaultOperator(QueryParser.Operator.OR);
+      parser.setDefaultOperator(op);
       parser.setAllowLeadingWildcard(true);
       return parser.parse(s);
     } catch (Exception e) {
@@ -286,10 +301,10 @@ public class SE {
    * @param docID
    * @return Object of id
    */
-  public static Object get(int docID) {
+  public static <T> T get(int docID) {
     try {
       Document d = searcher.doc(docID);
-      return d.get(X.ID);
+      return (T) d.get(X.ID);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       // delete(docID);
@@ -329,6 +344,12 @@ public class SE {
    */
   public static void register(String type, Indexer s) {
     searchables.put(type, s);
+
+    // launch the index
+    if (indexer != null) {
+      indexer.schedule(0);
+    }
+
   }
 
   private static Map<String, Indexer> searchables = new HashMap<String, Indexer>();
@@ -435,7 +456,7 @@ public class SE {
     public void onExecute() {
       boolean updated = false;
 
-      for (String type : searchables.keySet()) {
+      for (String type : searchables.keySet().toArray(new String[searchables.size()])) {
         Indexer s = searchables.get(type);
         Object prev = null;
         Object id = s.next(FLAG);
