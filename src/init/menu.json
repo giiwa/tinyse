@@ -1,0 +1,16 @@
+[{
+			'name' : 'admin',
+			'childs' : [{
+						name : 'menu.tinyse',
+						classes : 'icon-cog',
+						access : 'access.config.admin',
+						seq : 1010,
+						childs : [{
+									name : 'menu.tinyse',
+									load : '/admin/tinyse/status',
+									access : 'access.config.admin',
+									seq : 10,
+									classes : 'icon-folder-download'
+								}]
+					}]
+		}]

@@ -1,3 +1,4 @@
+
 package org.giiwa.tinyse.se;
 
 import org.apache.lucene.document.Document;

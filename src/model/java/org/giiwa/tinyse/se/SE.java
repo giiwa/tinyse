@@ -1,6 +1,7 @@
 package org.giiwa.tinyse.se;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleFragmenter;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.giiwa.core.bean.Helper.W;
 import org.giiwa.core.bean.TimeStamp;
 import org.giiwa.core.bean.X;
 import org.giiwa.core.task.Task;
@@ -189,6 +191,28 @@ public class SE {
       log.error(s, e);
     }
     return null;
+  }
+
+  /**
+   * build and boolean query
+   * 
+   * @param q
+   *          the original query
+   * @param w
+   *          the group conditions
+   * @return
+   */
+  public static Query build(Query q, W w) {
+    BooleanQuery q1 = new BooleanQuery();
+    q1.add(q, Occur.MUST);
+
+    List<W.Entity> list = w.getAll();
+    for (W.Entity e : list) {
+      q1.add(new TermQuery(new Term(e.name, e.value.toString())), Occur.MUST);
+      q1.add(q, Occur.MUST);
+    }
+
+    return q1;
   }
 
   /**
