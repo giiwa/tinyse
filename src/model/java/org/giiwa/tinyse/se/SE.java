@@ -453,6 +453,11 @@ public class SE {
   final private static class IndexerTask extends Task {
 
     @Override
+    public String getName() {
+      return "se.indexer";
+    }
+
+    @Override
     public void onExecute() {
       boolean updated = false;
 
