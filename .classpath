@@ -42,7 +42,6 @@
 	<classpathentry kind="lib" path="depends/mail-1.4.jar"/>
 	<classpathentry kind="lib" path="depends/memcached-2.6.3.jar"/>
 	<classpathentry kind="lib" path="depends/metadata-extractor-2.6.4.jar"/>
-	<classpathentry kind="lib" path="depends/mongo-java-driver-2.10.0.jar"/>
 	<classpathentry kind="lib" path="depends/mqtt-client-1.10.jar"/>
 	<classpathentry kind="lib" path="depends/postgresql-9.0-801.jdbc4.jar"/>
 	<classpathentry kind="lib" path="depends/servlet-api-2.5.jar"/>
@@ -60,5 +59,7 @@
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queryparser-4.10.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-sandbox-4.10.4.jar"/>
 	<classpathentry kind="lib" path="depends/giiwa-1.2.jar"/>
+	<classpathentry kind="lib" path="depends/mongodb-driver-3.3.0.jar"/>
+	<classpathentry kind="lib" path="depends/mongodb-driver-core-3.3.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

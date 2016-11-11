@@ -1,9 +1,8 @@
-
 package org.giiwa.tinyse.se;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -33,8 +32,8 @@ public class example {
     for (ScoreDoc d : dd) {
       Long id = (Long) SE.get(d.doc);
       if (id != null) {
-        Example e = Example.load((long) id);
-        System.out.println(e.getName());
+//        Example e = Example.load((long) id);
+//        System.out.println(e.getName());
       }
     }
   }
