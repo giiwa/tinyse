@@ -458,44 +458,46 @@ public class SE {
 
       for (String type : searchables.keySet().toArray(new String[searchables.size()])) {
         Indexer s = searchables.get(type);
-        Object prev = null;
-        Object id = s.next(FLAG);
-        while (!X.isEmpty(id)) {
-          try {
-            if (X.isSame(id, prev)) {
-              s.bad(id, FLAG);
-              error(type, 1);
-              log.warn("load same id in one time, id=" + id);
-            } else {
-              TimeStamp t = TimeStamp.create();
-              Document d = s.load(id);
-              if (d != null) {
-                d.add(new StringField(_TYPE, type, Store.NO));
-                d.add(new StringField(X.ID, id.toString(), Store.YES));
-
-                BooleanQuery q = new BooleanQuery();
-                q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
-                q.add(new TermQuery(new Term(X.ID, id.toString())), Occur.MUST);
-                writer.deleteDocuments(q);
-
-                writer.addDocument(d);
-                s.done(id, FLAG);
-                updated = true;
-                prev = id;
-
-                index(type, t.past(), 1);
-              } else {
-                log.warn("bad id ?" + id);
+        synchronized (s) {
+          Object prev = null;
+          Object id = s.next(FLAG);
+          while (!X.isEmpty(id)) {
+            try {
+              if (X.isSame(id, prev)) {
                 s.bad(id, FLAG);
                 error(type, 1);
+                log.warn("load same id in one time, id=" + id);
+              } else {
+                TimeStamp t = TimeStamp.create();
+                Document d = s.load(id);
+                if (d != null) {
+                  d.add(new StringField(_TYPE, type, Store.NO));
+                  d.add(new StringField(X.ID, id.toString(), Store.YES));
+
+                  BooleanQuery q = new BooleanQuery();
+                  q.add(new TermQuery(new Term(_TYPE, type)), Occur.MUST);
+                  q.add(new TermQuery(new Term(X.ID, id.toString())), Occur.MUST);
+                  writer.deleteDocuments(q);
+
+                  writer.addDocument(d);
+                  s.done(id, FLAG);
+                  updated = true;
+                  prev = id;
+
+                  index(type, t.past(), 1);
+                } else {
+                  log.warn("bad id ?" + id);
+                  s.bad(id, FLAG);
+                  error(type, 1);
+                }
               }
+            } catch (Exception e) {
+              log.error(e.getMessage(), e);
+              s.bad(id, FLAG);
+              error(type, 1);
             }
-          } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            s.bad(id, FLAG);
-            error(type, 1);
+            id = s.next(FLAG);
           }
-          id = s.next(FLAG);
         }
       }
 
