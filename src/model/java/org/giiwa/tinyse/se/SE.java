@@ -168,6 +168,10 @@ public class SE {
       IndexReader reader = DirectoryReader.open(ram);
       searcher = new IndexSearcher(reader);
 
+      if (indexer != null) {
+        throw new Exception("start twice");
+      }
+
       indexer = new IndexerTask();
       indexer.schedule(10);
     } catch (Exception e) {

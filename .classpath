@@ -58,7 +58,7 @@
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queries-4.10.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-queryparser-4.10.4.jar"/>
 	<classpathentry kind="lib" path="src/WEB-INF/lib/lucene-sandbox-4.10.4.jar"/>
-	<classpathentry kind="lib" path="depends/giiwa-1.2.jar"/>
+	<classpathentry kind="lib" path="depends/giiwa-1.2.jar" sourcepath="/giiwa"/>
 	<classpathentry kind="lib" path="depends/mongodb-driver-3.3.0.jar"/>
 	<classpathentry kind="lib" path="depends/mongodb-driver-core-3.3.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
