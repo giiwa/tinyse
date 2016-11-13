@@ -168,9 +168,7 @@ public class SE {
       IndexReader reader = DirectoryReader.open(ram);
       searcher = new IndexSearcher(reader);
 
-      if (indexer != null) {
-        throw new Exception("start twice");
-      }
+      log.error("started SE", new Exception("TineSE"));
 
       indexer = new IndexerTask();
       indexer.schedule(10);
