@@ -157,9 +157,12 @@ public class SE {
    * @param conf
    *          the configuration
    */
-  public static void init(Configuration conf) {
-    try {
+  public synchronized static void init(Configuration conf) {
+    if (ram != null) {
+      return;
+    }
 
+    try {
       ram = new RAMDirectory();
       analyzer = new IKAnalyzer();
       writer = new IndexWriter(ram, new IndexWriterConfig(Version.LATEST, analyzer));
@@ -167,8 +170,6 @@ public class SE {
 
       IndexReader reader = DirectoryReader.open(ram);
       searcher = new IndexSearcher(reader);
-
-      log.error("started SE", new Exception("TineSE"));
 
       indexer = new IndexerTask();
       indexer.schedule(10);
