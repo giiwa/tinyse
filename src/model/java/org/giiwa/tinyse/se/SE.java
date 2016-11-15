@@ -226,23 +226,40 @@ public class SE {
 
     List<W.Entity> list = w.getAll();
     for (W.Entity e : list) {
-      String[] ss = X.split(e.value.toString(), "|");
-      if (ss.length > 1) {
-        BooleanQuery q2 = new BooleanQuery();
-        for (String s1 : ss) {
-          q2.add(new TermQuery(new Term(e.name, s1)), Occur.SHOULD);
-        }
-      } else if (ss.length > 0) {
-        if (ss[0].startsWith("!")) {
-          q1.add(new TermQuery(new Term(e.name, ss[0].substring(1))), Occur.SHOULD);
-        } else {
-          q1.add(new TermQuery(new Term(e.name, ss[0])), Occur.MUST);
-        }
-      }
+      String s = e.value.toString();
+      _build(q1, e.name, s);
     }
 
-    q1.add(q, Occur.MUST);
     return q1;
+  }
+
+  private static Query _build(BooleanQuery q0, String name, String s) {
+
+    String[] ss = X.split(s, "\\)");
+    for (String s1 : ss) {
+      Occur o = Occur.MUST;
+      if (s1.startsWith("!")) {
+        o = Occur.MUST_NOT;
+        s1 = s1.substring(1);
+      }
+      String[] ss1 = X.split(s1, "[(|]");
+      BooleanQuery q1 = new BooleanQuery();
+      for (String s2 : ss1) {
+        if (s2.startsWith("!")) {
+          q1.add(new TermQuery(new Term(name, s2.substring(1))), Occur.MUST_NOT);
+        } else {
+          q1.add(new TermQuery(new Term(name, s2)), Occur.SHOULD);
+        }
+      }
+      q0.add(q1, o);
+    }
+    return q0;
+  }
+
+  public static void main(String[] args) {
+    BooleanQuery q = new BooleanQuery();
+    String s = "!aa|asd|aaa";
+    System.out.println(_build(q, "name", s));
   }
 
   /**
@@ -549,4 +566,5 @@ public class SE {
     long  searchmin = Long.MAX_VALUE;
 
   }
+
 }
