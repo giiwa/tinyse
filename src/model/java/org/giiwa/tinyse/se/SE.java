@@ -226,10 +226,22 @@ public class SE {
 
     List<W.Entity> list = w.getAll();
     for (W.Entity e : list) {
-      q1.add(new TermQuery(new Term(e.name, e.value.toString())), Occur.MUST);
-      q1.add(q, Occur.MUST);
+      String[] ss = X.split(e.value.toString(), "|");
+      if (ss.length > 1) {
+        BooleanQuery q2 = new BooleanQuery();
+        for (String s1 : ss) {
+          q2.add(new TermQuery(new Term(e.name, s1)), Occur.SHOULD);
+        }
+      } else if (ss.length > 0) {
+        if (ss[0].startsWith("!")) {
+          q1.add(new TermQuery(new Term(e.name, ss[0].substring(1))), Occur.SHOULD);
+        } else {
+          q1.add(new TermQuery(new Term(e.name, ss[0])), Occur.MUST);
+        }
+      }
     }
 
+    q1.add(q, Occur.MUST);
     return q1;
   }
 
