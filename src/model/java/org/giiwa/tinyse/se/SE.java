@@ -200,10 +200,24 @@ public class SE {
    * @return
    */
   public static Query parse(String s, String[] fields, QueryParser.Operator op) {
+    return parse(s, fields, op, 0);
+  }
+
+  /**
+   * create a query
+   * 
+   * @param s
+   * @param fields
+   * @param op
+   * @param parseslop
+   * @return
+   */
+  public static Query parse(String s, String[] fields, QueryParser.Operator op, int parseslop) {
     try {
       MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
       parser.setDefaultOperator(op);
       parser.setAllowLeadingWildcard(true);
+      parser.setPhraseSlop(parseslop);//?
       return parser.parse(s);
     } catch (Exception e) {
       log.error(s, e);
